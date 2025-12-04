@@ -26,13 +26,12 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { CategoryQueryDto } from './dto/category-query.dto';
 
-@ApiTags('Categories') // ✅ Group name in Swagger UI
-// @ApiBearerAuth() // ✅ Enable this if using JWT
+@ApiTags('Categories')
+// @ApiBearerAuth() //Enable this if using JWT
 @Controller('category')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
-  // ✅ CREATE CATEGORY
   @Post()
   @ApiOperation({ summary: 'Create a new category' })
   @ApiBody({ type: CreateCategoryDto })
@@ -45,7 +44,6 @@ export class CategoryController {
     return this.categoryService.create(createCategoryDto);
   }
 
-  // ✅ GET ALL CATEGORIES (WITH QUERY FILTER)
   @Get()
   @ApiOperation({
     summary: 'Get all categories with pagination, search & status filter',
@@ -59,7 +57,6 @@ export class CategoryController {
     return this.categoryService.findAll(query);
   }
 
-  // ✅ GET CATEGORY BY ID OR SLUG
   @Get(':idOrSlug')
   @ApiOperation({ summary: 'Get a category by ID or slug' })
   @ApiParam({
@@ -73,7 +70,6 @@ export class CategoryController {
     return this.categoryService.findOne(idOrSlug);
   }
 
-  // ✅ UPDATE CATEGORY
   @Patch(':id')
   @ApiOperation({ summary: 'Update a category' })
   @ApiParam({
@@ -93,7 +89,6 @@ export class CategoryController {
     return this.categoryService.update(id, updateCategoryDto);
   }
 
-  // ✅ DELETE CATEGORY
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a category' })
   @ApiParam({
