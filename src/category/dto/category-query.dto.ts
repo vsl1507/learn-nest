@@ -1,23 +1,49 @@
-import { IsOptional, IsNumberString, IsString } from 'class-validator';
+import { IsOptional, IsNumber, IsString, IsEnum } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { CategoryStatus } from '../schema/category.schema';
 
 export class CategoryQueryDto {
+  @ApiPropertyOptional({
+    example: 1,
+    description: 'Page number (starts from 1)',
+  })
   @IsOptional()
-  @IsNumberString()
-  page?: string;
+  @Type(() => Number)
+  @IsNumber()
+  page?: number;
 
+  @ApiPropertyOptional({
+    example: 10,
+    description: 'Number of items per page',
+  })
   @IsOptional()
-  @IsNumberString()
-  limit?: string;
+  @Type(() => Number)
+  @IsNumber()
+  limit?: number;
 
+  @ApiPropertyOptional({
+    example: 'car',
+    description: 'Search by category name',
+  })
   @IsOptional()
   @IsString()
   search?: string;
 
+  @ApiPropertyOptional({
+    example: 'createdAt:desc',
+    description: 'Sort format: field:asc | field:desc (e.g. name:asc)',
+  })
   @IsOptional()
   @IsString()
-  sort?: string; // e.g. "name", "-createdAt"
+  sort?: string;
 
+  @ApiPropertyOptional({
+    enum: CategoryStatus,
+    example: CategoryStatus.ACTIVE,
+    description: 'Filter by category status',
+  })
   @IsOptional()
-  @IsString()
-  status?: string; // active | inactive
+  @IsEnum(CategoryStatus)
+  status?: CategoryStatus;
 }

@@ -35,7 +35,7 @@ export class NewsController {
     return this.newsService.findAll(query);
   }
 
-  @Get('idOrSlug')
+  @Get(':idOrSlug')
   findOne(@Param('idOrSlug') idOrSlug: string) {
     return this.newsService.findOne(idOrSlug);
   }

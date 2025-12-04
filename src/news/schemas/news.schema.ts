@@ -7,7 +7,7 @@ export class News extends Document {
   @Prop({ required: true })
   title: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop({ unique: true })
   slug: string;
 
   @Prop({ unique: true })

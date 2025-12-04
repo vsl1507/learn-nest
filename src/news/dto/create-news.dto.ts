@@ -39,5 +39,5 @@ export class CreateNewsDto {
 
   @IsOptional()
   @IsDateString()
-  publishedAt?: string;
+  publishedAt?: Date;
 }

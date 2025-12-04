@@ -77,7 +77,21 @@ export class NewsService {
 
   async create(createNewsDto: CreateNewsDto) {
     try {
-      const created = new this.categoryModel(createNewsDto);
+      if (!createNewsDto.publishedAt) {
+        createNewsDto.publishedAt = new Date();
+      }
+
+      if (createNewsDto.categories?.length) {
+        const categoryCount = await this.categoryModel.countDocuments({
+          _id: { $in: createNewsDto.categories },
+        });
+
+        if (categoryCount !== createNewsDto.categories.length) {
+          throw new NotFoundException('One or more categories do not exist');
+        }
+      }
+
+      const created = new this.newsModel(createNewsDto);
       const result = await created.save();
       return {
         data: result,
@@ -188,11 +202,11 @@ export class NewsService {
         updatePayload.slug = slug;
       }
 
-      const updated = await this.categoryModel
+      const updated = await this.newsModel
         .findByIdAndUpdate(id, updatePayload, { new: true })
         .exec();
-      if (!updated) throw new NotFoundException('Category not found');
-      return { data: updated, message: 'Category updated successfully' };
+      if (!updated) throw new NotFoundException('News not found');
+      return { data: updated, message: 'News updated successfully' };
     } catch (error: any) {
       if (error?.code === 11000) {
         throw new BadRequestException('Slug or URL already exists');
