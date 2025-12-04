@@ -35,6 +35,9 @@ export class Category {
     default: CategoryStatus.ACTIVE,
   })
   status: CategoryStatus;
+
+  @Prop({ type: [String], default: [] })
+  keywords: string[];
 }
 
 export const CategorySchema = SchemaFactory.createForClass(Category);

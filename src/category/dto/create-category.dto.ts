@@ -1,4 +1,10 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { CategoryStatus } from '../schema/category.schema';
 
 export class CreateCategoryDto {
@@ -13,4 +19,8 @@ export class CreateCategoryDto {
   @IsOptional()
   @IsEnum(CategoryStatus)
   status: CategoryStatus;
+
+  @IsArray()
+  @IsString({ each: true })
+  keywords?: string[];
 }

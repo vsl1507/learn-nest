@@ -15,6 +15,6 @@ import { Category, CategorySchema } from './schema/category.schema';
   ],
   controllers: [CategoryController],
   providers: [CategoryService],
-  exports: [CategoryService],
+  exports: [MongooseModule],
 })
 export class CategoryModule {}
