@@ -1,6 +1,7 @@
-import { IsOptional, IsNumber, IsString } from 'class-validator';
+import { IsOptional, IsNumber, IsString, IsMongoId } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+import { Types } from 'mongoose';
 
 export class NewsQueryDto {
   @ApiPropertyOptional({
@@ -36,4 +37,20 @@ export class NewsQueryDto {
   @IsOptional()
   @IsString()
   sort?: string;
+
+  @ApiPropertyOptional({
+    example: '6933e8b74bb51303e...',
+    description: 'Filter news by category Id',
+  })
+  @IsOptional()
+  @IsString()
+  categoryId?: string;
+
+  @ApiPropertyOptional({
+    example: 'business',
+    description: 'Filter news by category slug',
+  })
+  @IsOptional()
+  @IsString()
+  categorySlug?: string;
 }

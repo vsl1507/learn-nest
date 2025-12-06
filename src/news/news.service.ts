@@ -113,6 +113,8 @@ export class NewsService {
     const skip = (page - 1) * limit;
 
     const filter: any = {};
+
+    // ✅ SEARCH
     if (query.search) {
       filter.$or = [
         { title: { $regex: query.search, $options: 'i' } },
@@ -121,21 +123,69 @@ export class NewsService {
       ];
     }
 
+    // ✅ CATEGORY FILTER BY ID
+    if (query.categoryId) {
+      if (Types.ObjectId.isValid(query.categoryId)) {
+        filter.categories = query.categoryId; // Keep as string for raw query
+      }
+    }
+
+    // ✅ CATEGORY FILTER BY SLUG
+    if (query.categorySlug && !query.categoryId) {
+      const category = await this.categoryModel.findOne({
+        slug: query.categorySlug,
+      });
+
+      if (category) {
+        filter.categories = category._id.toString();
+      } else {
+        return {
+          message: 'News fetched successfully',
+          data: {
+            page,
+            limit,
+            total: 0,
+            data: [],
+          },
+        };
+      }
+    }
+
+    // ✅ SORT
     let sort: any = { publishedAt: -1 };
     if (query.sort) {
       const field = query.sort.replace('-', '');
       sort = query.sort.startsWith('-') ? { [field]: -1 } : { [field]: 1 };
     }
 
-    const [result, total] = await Promise.all([
-      this.newsModel
-        .find(filter)
-        .populate('categories', 'name keywords')
-        .sort(sort)
-        .skip(skip)
-        .limit(limit),
-      this.newsModel.countDocuments(filter),
+    const rawCollection = this.newsModel.collection;
+
+    const [rawResults, total] = await Promise.all([
+      rawCollection.find(filter).sort(sort).skip(skip).limit(limit).toArray(),
+      rawCollection.countDocuments(filter),
     ]);
+
+    const categoryIds = [
+      ...new Set(rawResults.flatMap((r) => r.categories || [])),
+    ];
+
+    const categories = await this.categoryModel
+      .find({
+        _id: { $in: categoryIds.map((id) => new Types.ObjectId(id)) },
+      })
+      .select('name slug')
+      .lean();
+
+    const categoryMap = new Map(
+      categories.map((cat) => [cat._id.toString(), cat]),
+    );
+
+    const result = rawResults.map((news) => ({
+      ...news,
+      categories: (news.categories || [])
+        .map((catId) => categoryMap.get(catId))
+        .filter(Boolean),
+    }));
 
     return {
       message: 'News fetched successfully',
